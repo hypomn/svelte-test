@@ -4,6 +4,8 @@
 <li>{{todoItem.title}}<input type="checkbox" checked="{{todoItem.done}}"></li>
 {{/each}}
 </ul>
+<p>You have {{openTodos.length}} open TODOs</p>
+
 
 <script>
   export default {
@@ -12,6 +14,10 @@
 		listTitle: "Generic TODO list",
         todoItems: []
       };
-    }
+    },
+	
+	computed: {
+		openTodos: todoItems => todoItems.filter(item => !item.done)
+	}
   };
 </script>

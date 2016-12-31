@@ -1,5 +1,11 @@
 var TodoList = (function () { 'use strict';
 
+function applyComputations ( state, newState, oldState ) {
+	if ( ( 'todoItems' in newState && typeof state.todoItems === 'object' || state.todoItems !== oldState.todoItems ) ) {
+		state.openTodos = newState.openTodos = template.computed.openTodos( state.todoItems );
+	}
+}
+
 var template = (function () {
   return {
     data () {
@@ -7,7 +13,11 @@ var template = (function () {
 		listTitle: "Generic TODO list",
         todoItems: []
       };
-    }
+    },
+	
+	computed: {
+		openTodos: todoItems => todoItems.filter(item => !item.done)
+	}
   };
 }());
 
@@ -29,12 +39,23 @@ function renderMainFragment ( root, component ) {
 		eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
 		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
 	}
+	
+	var text2 = createText( "\r\n" );
+	
+	var p = createElement( 'p' );
+	
+	appendNode( createText( "You have " ), p );
+	var text4 = createText( root.openTodos.length );
+	appendNode( text4, p );
+	appendNode( createText( " open TODOs" ), p );
 
 	return {
 		mount: function ( target, anchor ) {
 			insertNode( h1, target, anchor );
 			insertNode( text1, target, anchor );
 			insertNode( ul, target, anchor );
+			insertNode( text2, target, anchor );
+			insertNode( p, target, anchor );
 		},
 		
 		update: function ( changed, root ) {
@@ -56,6 +77,8 @@ function renderMainFragment ( root, component ) {
 			}
 			
 			eachBlock_iterations.length = eachBlock_value.length;
+			
+			text4.data = root.openTodos.length;
 		},
 		
 		teardown: function ( detach ) {
@@ -67,6 +90,8 @@ function renderMainFragment ( root, component ) {
 				detachNode( h1 );
 				detachNode( text1 );
 				detachNode( ul );
+				detachNode( text2 );
+				detachNode( p );
 			}
 		},
 	};
@@ -109,6 +134,7 @@ function TodoList ( options ) {
 	options = options || {};
 	
 	this._state = Object.assign( template.data(), options.data );
+applyComputations( this._state, this._state, {} );
 
 	this._observers = {
 		pre: Object.create( null ),
@@ -171,6 +197,7 @@ TodoList.prototype.on = function on( eventName, handler ) {
 TodoList.prototype.set = function set ( newState ) {
 	var oldState = this._state;
 	this._state = Object.assign( {}, oldState, newState );
+	applyComputations( this._state, newState, oldState )
 	
 	dispatchObservers( this, this._observers.pre, newState, oldState );
 	if ( this._fragment ) this._fragment.update( newState, this._state );
