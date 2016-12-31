@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <title>My first Svelte app</title>
+</head>
+<body>
+  <todoList></todoList>
+  <script src='TodoList.js'></script>	
+  <script>
+	var todoList = new TodoList({
+      target: document.querySelector( 'todoList' ),
+      data: {
+		listTitle: "Markus' TODO list",
+        todoItems: [
+			{
+				title: "Buy milk",
+				done: false
+			},
+			{
+				title: "Prepare for JS-Circle",
+				done: true
+			},
+			{
+				title: "Be awesome",
+				done: false
+			},			
+		]
+      }
+    });
+  </script>
+</body>
+</html>

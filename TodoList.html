@@ -1,0 +1,6 @@
+<h1>{{listTitle}}</h1>
+<ul>
+{{#each todoItems as todoItem}}
+<li>{{todoItem.title}}<input type="checkbox" checked="{{todoItem.done}}"></li>
+{{/each}}
+</ul>
