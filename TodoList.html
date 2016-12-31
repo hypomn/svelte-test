@@ -4,3 +4,14 @@
 <li>{{todoItem.title}}<input type="checkbox" checked="{{todoItem.done}}"></li>
 {{/each}}
 </ul>
+
+<script>
+  export default {
+    data () {
+      return {
+		listTitle: "Generic TODO list",
+        todoItems: []
+      };
+    }
+  };
+</script>

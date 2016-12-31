@@ -1,5 +1,16 @@
 var TodoList = (function () { 'use strict';
 
+var template = (function () {
+  return {
+    data () {
+      return {
+		listTitle: "Generic TODO list",
+        todoItems: []
+      };
+    }
+  };
+}());
+
 function renderMainFragment ( root, component ) {
 	var h1 = createElement( 'h1' );
 	
@@ -97,7 +108,7 @@ function renderEachBlock ( root, eachBlock_value, todoItem, todoItem__index, com
 function TodoList ( options ) {
 	options = options || {};
 	
-	this._state = options.data || {};
+	this._state = Object.assign( template.data(), options.data );
 
 	this._observers = {
 		pre: Object.create( null ),
