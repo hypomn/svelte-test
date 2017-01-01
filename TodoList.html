@@ -1,23 +1,41 @@
 <h1>{{listTitle}}</h1>
+
+<input type="text" ref:newTodo bind:value="newTodoItemTitle" placeholder="Enter a TODO" autofocus/><button on:click="addNewTodo(newTodoItemTitle)">Add TODO</button>
 <ul>
 {{#each todoItems as todoItem}}
-<li>{{todoItem.title}}<input type="checkbox" checked="{{todoItem.done}}"></li>
+<li class="todo-item todo-item-{{todoItem.done ? 'done' : 'undone'}}">{{todoItem.title}}<input type="checkbox" bind:checked="todoItem.done"></li>
 {{/each}}
 </ul>
-<p>You have {{openTodos.length}} open TODOs</p>
+<p>You have {{undoneTodos.length}} uncompleted TODOs</p>
 
 
 <script>
   export default {
     data () {
       return {
-		listTitle: "Generic TODO list",
-        todoItems: []
+				listTitle: "Generic TODO list",
+        todoItems: [],
+				newTodoItemTitle: ''
       };
     },
 	
-	computed: {
-		openTodos: todoItems => todoItems.filter(item => !item.done)
-	}
+		computed: {
+			undoneTodos: todoItems => todoItems.filter(item => !item.done),
+			doneTodos: todoItems => todoItems.filter(item => item.done)
+		},
+		
+		methods: {
+			addNewTodo (newTodoItemTitle) {
+				const todoItems = this.get('todoItems');
+				
+				todoItems.push({
+					title: newTodoItemTitle,
+					done: false
+				});
+				
+				this.set({todoItems});
+				this.refs.newTodo.value = '';
+			}
+		}
   };
 </script>
