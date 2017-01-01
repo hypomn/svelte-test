@@ -3,11 +3,17 @@
 <input type="text" ref:newTodo bind:value="newTodoItemTitle" placeholder="Enter a TODO" autofocus/><button on:click="addNewTodo(newTodoItemTitle)">Add TODO</button>
 <ul>
 {{#each todoItems as todoItem}}
-<li class="todo-item todo-item-{{todoItem.done ? 'done' : 'undone'}}">{{todoItem.title}}<input type="checkbox" bind:checked="todoItem.done"></li>
+<li class="todo-item-{{todoItem.done ? 'done' : 'undone'}}">{{todoItem.title}}<input type="checkbox" bind:checked="todoItem.done"></li>
 {{/each}}
 </ul>
-<p>You have {{undoneTodos.length}} uncompleted TODOs</p>
 
+<p>{{undoneTodos.length ? `You have ${undoneTodos.length} uncompleted TODOs.` : 'Congratulations! You have no TODOs.'}}</p>
+
+<style>
+	.todo-item-done {
+		text-decoration: line-through;
+	}
+</style>
 
 <script>
   export default {
@@ -26,15 +32,19 @@
 		
 		methods: {
 			addNewTodo (newTodoItemTitle) {
-				const todoItems = this.get('todoItems');
-				
-				todoItems.push({
-					title: newTodoItemTitle,
-					done: false
-				});
-				
-				this.set({todoItems});
-				this.refs.newTodo.value = '';
+				if (newTodoItemTitle !== '') {
+					const todoItems = this.get('todoItems');
+					
+					todoItems.push({
+						title: newTodoItemTitle,
+						done: false
+					});
+					
+					this.set({todoItems});
+					this.refs.newTodo.value = '';
+				} else {
+					this.refs.newTodo.focus();
+				}
 			}
 		}
   };

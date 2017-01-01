@@ -27,28 +27,43 @@ var template = (function () {
 		
 		methods: {
 			addNewTodo (newTodoItemTitle) {
-				const todoItems = this.get('todoItems');
-				
-				todoItems.push({
-					title: newTodoItemTitle,
-					done: false
-				});
-				
-				this.set({todoItems});
-				this.refs.newTodo.value = '';
+				if (newTodoItemTitle !== '') {
+					const todoItems = this.get('todoItems');
+					
+					todoItems.push({
+						title: newTodoItemTitle,
+						done: false
+					});
+					
+					this.set({todoItems});
+					this.refs.newTodo.value = '';
+				} else {
+					this.refs.newTodo.focus();
+				}
 			}
 		}
   };
 }());
 
+let addedCss = false;
+function addCss () {
+	var style = createElement( 'style' );
+	style.textContent = "\r\n\t.todo-item-done[svelte-3698330130], [svelte-3698330130] .todo-item-done {\r\n\t\ttext-decoration: line-through;\r\n\t}\r\n";
+	appendNode( style, document.head );
+
+	addedCss = true;
+}
+
 function renderMainFragment ( root, component ) {
 	var h1 = createElement( 'h1' );
+	h1.setAttribute( 'svelte-3698330130', '' );
 	
 	var text = createText( root.listTitle );
 	appendNode( text, h1 );
 	var text1 = createText( "\r\n\r\n" );
 	
 	var input = createElement( 'input' );
+	input.setAttribute( 'svelte-3698330130', '' );
 	input.type = "text";
 	component.refs.newTodo = input;
 	
@@ -67,6 +82,7 @@ function renderMainFragment ( root, component ) {
 	input.autofocus = true;
 	
 	var button = createElement( 'button' );
+	button.setAttribute( 'svelte-3698330130', '' );
 	
 	function clickHandler ( event ) {
 		var root = this.__svelte.root;
@@ -84,6 +100,7 @@ function renderMainFragment ( root, component ) {
 	var text3 = createText( "\r\n" );
 	
 	var ul = createElement( 'ul' );
+	ul.setAttribute( 'svelte-3698330130', '' );
 	
 	var eachBlock_anchor = createComment( "#each todoItems" );
 	appendNode( eachBlock_anchor, ul );
@@ -95,14 +112,13 @@ function renderMainFragment ( root, component ) {
 		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
 	}
 	
-	var text4 = createText( "\r\n" );
+	var text4 = createText( "\r\n\r\n" );
 	
 	var p = createElement( 'p' );
+	p.setAttribute( 'svelte-3698330130', '' );
 	
-	appendNode( createText( "You have " ), p );
-	var text6 = createText( root.undoneTodos.length );
-	appendNode( text6, p );
-	appendNode( createText( " uncompleted TODOs" ), p );
+	var text5 = createText( root.undoneTodos.length ? `You have ${root.undoneTodos.length} uncompleted TODOs.` : 'Congratulations! You have no TODOs.' );
+	appendNode( text5, p );
 	input.focus();
 
 	return {
@@ -141,7 +157,7 @@ function renderMainFragment ( root, component ) {
 			
 			eachBlock_iterations.length = eachBlock_value.length;
 			
-			text6.data = root.undoneTodos.length;
+			text5.data = root.undoneTodos.length ? `You have ${root.undoneTodos.length} uncompleted TODOs.` : 'Congratulations! You have no TODOs.';
 		},
 		
 		teardown: function ( detach ) {
@@ -169,12 +185,14 @@ function renderMainFragment ( root, component ) {
 
 function renderEachBlock ( root, eachBlock_value, todoItem, todoItem__index, component ) {
 	var li = createElement( 'li' );
-	li.className = "todo-item todo-item-" + ( todoItem.done ? 'done' : 'undone' );
+	li.setAttribute( 'svelte-3698330130', '' );
+	li.className = "todo-item-" + ( todoItem.done ? 'done' : 'undone' );
 	
 	var text = createText( todoItem.title );
 	appendNode( text, li );
 	
 	var input = createElement( 'input' );
+	input.setAttribute( 'svelte-3698330130', '' );
 	input.type = "checkbox";
 	
 	var input_updating = false;
@@ -208,7 +226,7 @@ function renderEachBlock ( root, eachBlock_value, todoItem, todoItem__index, com
 		update: function ( changed, root, eachBlock_value, todoItem, todoItem__index ) {
 			var todoItem = eachBlock_value[todoItem__index];
 			
-			li.className = "todo-item todo-item-" + ( todoItem.done ? 'done' : 'undone' );
+			li.className = "todo-item-" + ( todoItem.done ? 'done' : 'undone' );
 			
 			text.data = todoItem.title;
 			
@@ -245,6 +263,8 @@ applyComputations( this._state, this._state, {} );
 	this._root = options._root;
 	this._yield = options._yield;
 
+	if ( !addedCss ) addCss();
+	
 	this._fragment = renderMainFragment( this._state, this );
 	if ( options.target ) this._fragment.mount( options.target, null );
 }
